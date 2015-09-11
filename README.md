@@ -49,17 +49,18 @@ targetserver | success >> {
 ##Verifying The RabbitMQ Installation
 The simplest way to validate the RabbitMQ installation is to verify that your web browser can connect to the RabbitMQ 
 administration console.  The URL is something similar to `http://192.168.1.33:15672/`.  You should be able to authenicate 
-with `guest\guest` as credentials.
+with `guest\guest` as credentials.  In the `Overview` tab, examine the value of the `File descriptors` column and ensure it 
+shows the correct value.  Low values will limit the throughput of the broker.  Development workloads should use 4096 and 
+production workloads should use 65536.
 
-##Double Check the Production Checklist
-The MongoDB folks have provided a [Production Checklist](http://docs.mongodb.org/manual/administration/production-checklist/) that 
-should be checked to verify that your instance is running with optimal settings.  Some settings, such as disabling hugepage, is 
-done by the playbook but many of them require a human to examine the environment and determine the proper settings.
+##Check The Tuning Guidelines
+The [RabbitMQ Installation document](https://www.rabbitmq.com/install-debian.html) has notes on OS and RabbitMQ configuration 
+settings. Since the advice changes between releases, it is wise to read over the page to verify that no manual provisioning 
+needs to take place. 
 
 ##Installing Ubuntu As A Virtual Machine
 When installing Ubuntu, make sure to hit the `F4` key and select `Minimal virtual machine`.  This will improve the performance 
-of the VM as well as enable some optimizations that MongoDB can take advantage of.  For example,  the `Use the noop disk scheduler 
-for virtualized drives in guest VMs` tip in the Production Checklist is already enabled.
+of the VM as well as enable some optimizations that RabbitMQ can take advantage of.
 
 #Troubleshooting
 
@@ -79,27 +80,17 @@ ok: [targetserver]
 TASK: [create groups based on distribution] *********************************** 
 changed: [targetserver]
 
-TASK: [debug msg="dbPath = {{ dbPath }}"] ************************************* 
+TASK: [debug msg="vm_memory_high_watermark = {{ vm_memory_high_watermark }}"] *** 
 ok: [targetserver] => {
-    "msg": "dbPath = /var/ronbo"
+    "msg": "vm_memory_high_watermark = 0.9"
 }
 
-TASK: [debug msg="engine = {{ engine }}"] ************************************* 
+TASK: [debug msg="ulimit = {{ ulimit }}"] ************************************* 
 ok: [targetserver] => {
-    "msg": "engine = wiredTiger"
+    "msg": "ulimit = 4096"
 }
 
-TASK: [debug msg="cacheSizeGB = {{ cacheSizeGB }}"] *************************** 
-ok: [targetserver] => {
-    "msg": "cacheSizeGB = 3"
-}
-
-TASK: [debug msg="notablescan = {{ notablescan }}"] *************************** 
-ok: [targetserver] => {
-    "msg": "notablescan = 1"
-}
-
-PLAY [Install MongoDB] ******************************************************** 
+PLAY [Install RabbitMQ] ******************************************************* 
 
 GATHERING FACTS *************************************************************** 
 ok: [targetserver]
@@ -107,29 +98,26 @@ ok: [targetserver]
 TASK: [Install Repository keys] *********************************************** 
 changed: [targetserver]
 
-TASK: [Install MongoDB repository] ******************************************** 
+TASK: [Install RabbitMQ repository] ******************************************* 
 changed: [targetserver]
 
-TASK: [Install MongoDB] ******************************************************* 
+TASK: [Install RabbitMQ] ****************************************************** 
 changed: [targetserver]
 
-TASK: [Copy the custom configuration file into /etc] ************************** 
+TASK: [Copy the custom configuration file into /etc/rabbitmq] ***************** 
 changed: [targetserver]
 
-TASK: [Set the permissions on the specified data directory] ******************* 
+TASK: [Copy the enabled plugins configuration file] *************************** 
 changed: [targetserver]
 
-TASK: [Copy the huge pages disablement script] ******************************** 
+TASK: [Copy the custom configuration file into /etc/default] ****************** 
 changed: [targetserver]
 
-TASK: [Make sure the script runs at boot time] ******************************** 
-changed: [targetserver]
-
-TASK: [Restart MongoDB] ******************************************************* 
+TASK: [Restart RabbitMQ] ****************************************************** 
 changed: [targetserver]
 
 PLAY RECAP ******************************************************************** 
-targetserver               : ok=15   changed=9    unreachable=0    failed=0   
+targetserver               : ok=12   changed=8    unreachable=0    failed=0   
 ```
 
 ##Only Works On Ubuntu
