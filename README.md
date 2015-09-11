@@ -4,7 +4,8 @@ of [RabbitMQ](https://www.rabbitmq.com/) into an [Ubuntu 14.04](http://www.ubunt
 
 * quick -- normally taking only a few seconds to execute
 * configurable -- some of the more useful RabbitMQ settings are exposed as a single configuration file
-* convenient -- the default settings enable remote access via the guest account and set the memory high water mark to 90%  
+* convenient -- the default settings enable remote access via the guest account, setli the memory high water mark to 
+90% and increases the `ulimit` setting to allow for larger workloads.
 
 #Prerequisites
 
@@ -21,7 +22,7 @@ The first step is to get the files onto your Ansible box.  A great way is to use
 simply clone this project via `git clone https://github.com/kurron/ansible-rabbitmq.git`.  Another option is to 
 [download the zip](https://github.com/kurron/ansible-rabbitmq/archive/master.zip) directly from GitHub.
 
-Once you have the files available to you, you probably examine the `hosts` file and see if you want to alter the defaults.  The 
+Once you have the files available to you, you should probably examine the `hosts` file and see if you want to alter the defaults.  The 
 file is documented and should be easily understood.  **You must also edit the `ansible.cfg` file, specifically the 
 `remote_user` property.**  Failure to do this will prevent Ansible from SSH'ing into the instance.
 
