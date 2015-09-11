@@ -7,6 +7,7 @@
     - name: create groups based on distribution
       group_by: key={{ ansible_distribution }}
     - debug: msg="vm_memory_high_watermark = {{ vm_memory_high_watermark }}"
+    - debug: msg="ulimit = {{ ulimit }}"
 
 - name: Install RabbitMQ
   hosts: Ubuntu
@@ -22,5 +23,7 @@
       template: src=templates/rabbitmq.config dest=/etc/rabbitmq/rabbitmq.config mode=0444 backup=yes force=yes
     - name: Copy the enabled plugins configuration file 
       copy: src=files/enabled_plugins dest=/etc/rabbitmq/enabled_plugins mode=0444 backup=no force=yes
+    - name: Copy the custom configuration file into /etc/default 
+      template: src=templates/rabbitmq-server dest=/etc/default/rabbitmq-server mode=0444 backup=yes force=yes
     - name: Restart RabbitMQ 
       service: name=rabbitmq-server state=restarted

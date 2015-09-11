@@ -1,18 +1,15 @@
 #Overview
 This is an [Ansible](http://www.ansible.com/) playbook designed to greatly simplify the installation 
-of [MongoDB](https://www.mongodb.org/) into an [Ubuntu 14.04](http://www.ubuntu.com/) instance.  The playbook is:
+of [RabbitMQ](https://www.rabbitmq.com/) into an [Ubuntu 14.04](http://www.ubuntu.com/) instance.  The playbook is:
 
 * quick -- normally taking only a few seconds to execute
-* configurable -- some of the more useful MongoDB settings are exposed as a single configuration file
-* convenient -- the default settings enable the most advanced storage engine MongoDB supports and are suitable for
-many projects
+* configurable -- some of the more useful RabbitMQ settings are exposed as a single configuration file
+* convenient -- the default settings enable remote access via the guest account and set the memory high water mark to 90%  
 
 #Prerequisites
 
 * an Ubuntu 14.04 Server instance with [SSH](http://www.openssh.com/) enabled and working
-* the instance must have an [XFS](https://en.wikipedia.org/wiki/XFS) partition large enough to store MongoDB's data files
 * the instance must have a user that has `sudo` privledges
-* the instance should have 4GB of RAM -- the default configuration allows MongoDB to claim 3GB of it
 * a box with the most current Ansible installed -- all testing was done using Ansible 1.9.3 on an Ubuntu 14.04 desktop talking 
 to an Ubuntu 14.04 server
  
@@ -21,19 +18,16 @@ Since this project is just a collection of configuration and data files for Ansi
 
 #Installation
 The first step is to get the files onto your Ansible box.  A great way is to use [Git](https://git-scm.com/) and
-simply clone this project via `git clone https://github.com/kurron/ansible-mongodb.git`.  Another option is to 
-[download the zip](https://github.com/kurron/ansible-mongodb/archive/master.zip) directly from GitHub.
+simply clone this project via `git clone https://github.com/kurron/ansible-rabbitmq.git`.  Another option is to 
+[download the zip](https://github.com/kurron/ansible-rabbitmq/archive/master.zip) directly from GitHub.
 
-Once you have the files available to you, you are going to have to edit the `hosts` file with a text editor.  The 
-file is documented and should be easily understood. **The `dbPath` entry must be adjusted to point to the instance's
-XFS partition.** Failure to do this will prevent MongoDB from being properly installed. **You must also edit the 
-`ansible.cfg` file, specifically the `remote_user` property.**  Failure to do this will prevent Ansible from 
-SSH'ing into the instance.
+Once you have the files available to you, you probably examine the `hosts` file and see if you want to alter the defaults.  The 
+file is documented and should be easily understood.  **You must also edit the `ansible.cfg` file, specifically the 
+`remote_user` property.**  Failure to do this will prevent Ansible from SSH'ing into the instance.
 
-To install MongoDB all you have to do is issue `./playbook.yml` from the command line.  Ansible will ask you for the password 
+To install RabbitMQ all you have to do is issue `./playbook.yml` from the command line.  Ansible will ask you for the password 
 of the SSH account being used as well as the password to use for `sudo` (normally, you can just hit `Enter` here). In a few
-seconds your instance should have the most current MongoDB installed and running.  **Please note that you must reboot the instance 
-in order for some of the optimizations to take affect.** 
+seconds your instance should have the most current RabbitMQ installed and running.
 
 #Tips and Tricks
 
@@ -52,46 +46,10 @@ targetserver | success >> {
 }
 ```
 
-##Verifying The MongoDB Installation
-The simplest way to validate the MongoDB installation is to SSH into the instance and run the MongoDB cli: `mongo`.  If MongoDB is alive and
-listening, you should see something like this:
-
-```
-MongoDB shell version: 3.0.6
-connecting to: test
-Welcome to the MongoDB shell.
-For interactive help, type "help".
-For more comprehensive documentation, see
-	http://docs.mongodb.org/
-Questions? Try the support group
-	http://groups.google.com/group/mongodb-user
-> 
-```
-
-If you see warnings about `hugepage` settings that probably means you have not rebooted the instance and the optimization script 
-hasn't been run yet.  Once you are in the shell, you can examine the MongoDB settings by executing `db.serverStatus()`.  That will 
-produce a large JSON document detailing all of MongoDB's current settings.  If you see that the `storageEngine` is using
- `wiredTiger`, then things probably went well:
-
-```json
-	"storageEngine" : {
-		"name" : "wiredTiger"
-	},
-	"wiredTiger" : {
-		"uri" : "statistics:",
-		"LSM" : {
-			"sleep for LSM checkpoint throttle" : 0,
-			"sleep for LSM merge throttle" : 0,
-			"rows merged in an LSM tree" : 0,
-			"application work units currently queued" : 0,
-			"merge work units currently queued" : 0,
-			"tree queue hit maximum" : 0,
-			"switch work units currently queued" : 0,
-			"tree maintenance operations scheduled" : 0,
-			"tree maintenance operations discarded" : 0,
-			"tree maintenance operations executed" : 0
-		},
-```
+##Verifying The RabbitMQ Installation
+The simplest way to validate the RabbitMQ installation is to verify that your web browser can connect to the RabbitMQ 
+administration console.  The URL is something similar to `http://192.168.1.33:15672/`.  You should be able to authenicate 
+with `guest\guest` as credentials.
 
 ##Double Check the Production Checklist
 The MongoDB folks have provided a [Production Checklist](http://docs.mongodb.org/manual/administration/production-checklist/) that 

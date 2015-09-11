@@ -5,3 +5,6 @@ targetserver ansible_ssh_host=192.168.1.33 ansible_ssh_port=22
 # percentage of RAM RabbitMQ is allowed to grab 
 vm_memory_high_watermark=0.9
 
+# the number of open files that RabbitMQ is allowed . Use 4096 for development and 65536 for production.
+ulimit=4096
+
