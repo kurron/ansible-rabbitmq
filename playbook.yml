@@ -6,28 +6,21 @@
   tasks:
     - name: create groups based on distribution
       group_by: key={{ ansible_distribution }}
-    - debug: msg="dbPath = {{ dbPath }}"
-    - debug: msg="engine = {{ engine }}"
-    - debug: msg="cacheSizeGB = {{ cacheSizeGB }}"
-    - debug: msg="notablescan = {{ notablescan }}"
+    - debug: msg="vm_memory_high_watermark = {{ vm_memory_high_watermark }}"
 
-- name: Install MongoDB
+- name: Install RabbitMQ
   hosts: Ubuntu
   sudo: True
   tasks:
     - name: Install Repository keys
-      apt_key: state=present keyserver=keyserver.ubuntu.com id=7F0CEB10
-    - name: Install MongoDB repository
-      apt_repository: repo='deb http://repo.mongodb.org/apt/ubuntu trusty/mongodb-org/3.0 multiverse' state=present
-    - name: Install MongoDB
-      apt: name=mongodb-org state=latest update_cache=true cache_valid_time=600
-    - name: Copy the custom configuration file into /etc 
-      template: src=templates/mongod.conf dest=/etc/mongod.conf mode=0444 backup=yes force=yes
-    - name: Set the permissions on the specified data directory
-      file: path={{ dbPath }} owner=mongodb group=mongodb mode=0775 state=directory 
-    - name: Copy the huge pages disablement script
-      copy: src=files/disable-transparent-hugepages dest=/etc/init.d/disable-transparent-hugepages mode=0755 backup=no force=yes
-    - name: Make sure the script runs at boot time 
-      command: /usr/sbin/update-rc.d disable-transparent-hugepages defaults 
-    - name: Restart MongoDB 
-      service: name=mongod state=restarted
+      apt_key: state=present url=https://www.rabbitmq.com/rabbitmq-signing-key-public.asc
+    - name: Install RabbitMQ repository
+      apt_repository: repo='deb http://www.rabbitmq.com/debian/ testing main' state=present
+    - name: Install RabbitMQ
+      apt: name=rabbitmq-server state=latest update_cache=true cache_valid_time=600
+    - name: Copy the custom configuration file into /etc/rabbitmq 
+      template: src=templates/rabbitmq.config dest=/etc/rabbitmq/rabbitmq.config mode=0444 backup=yes force=yes
+    - name: Copy the enabled plugins configuration file 
+      copy: src=files/enabled_plugins dest=/etc/rabbitmq/enabled_plugins mode=0444 backup=no force=yes
+    - name: Restart RabbitMQ 
+      service: name=rabbitmq-server state=restarted

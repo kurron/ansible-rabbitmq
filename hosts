@@ -2,14 +2,6 @@
 targetserver ansible_ssh_host=192.168.1.33 ansible_ssh_port=22
 
 [all:vars]
-# specify a pre-exiting folder that is an XFS file system
-dbPath=/var/ronbo
+# percentage of RAM RabbitMQ is allowed to grab 
+vm_memory_high_watermark=0.9
 
-# the storage engine to use: wiredTiger or mmapv1 
-engine=wiredTiger
-
-# how much RAM, in GB, is MongoDB allowed to acquire for its own use
-cacheSizeGB=3
-
-# set to 1 in a test setting, 0 for a production setting
-notablescan=1
