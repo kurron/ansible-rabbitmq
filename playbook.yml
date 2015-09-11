@@ -1,18 +1,26 @@
 #!/usr/bin/env ansible-playbook
 
+---
 - name: Gather prerequisites 
   hosts: all
   gather_facts: True
   tasks:
     - name: create groups based on distribution
       group_by: key={{ ansible_distribution }}
-    - debug: msg="vm_memory_high_watermark = {{ vm_memory_high_watermark }}"
-    - debug: msg="ulimit = {{ ulimit }}"
 
 - name: Install RabbitMQ
   hosts: Ubuntu
   sudo: True
+  vars_prompt:
+    - name: "vm_memory_high_watermark"
+      prompt: "Percentage of memory to allow RabbitMQ to use"
+      default: "0.9"
+    - name: "ulimit"
+      prompt: "The maximum number of file handles. 4096 for development, 65535 for production."
+      default: "4096"
   tasks:
+    - debug: msg="vm_memory_high_watermark = {{ vm_memory_high_watermark }}"
+    - debug: msg="ulimit = {{ ulimit }}"
     - name: Install Repository keys
       apt_key: state=present url=https://www.rabbitmq.com/rabbitmq-signing-key-public.asc
     - name: Install RabbitMQ repository
