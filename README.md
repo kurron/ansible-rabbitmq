@@ -22,13 +22,13 @@ The first step is to get the files onto your Ansible box.  A great way is to use
 simply clone this project via `git clone https://github.com/kurron/ansible-rabbitmq.git`.  Another option is to 
 [download the zip](https://github.com/kurron/ansible-rabbitmq/archive/master.zip) directly from GitHub.
 
-Once you have the files available to you, you should probably examine the `hosts` file and see if you want to alter the defaults.  The 
-file is documented and should be easily understood.  **You must also edit the `ansible.cfg` file, specifically the 
+Once you have the files available to you, **you must also edit the `ansible.cfg` file, specifically the 
 `remote_user` property.**  Failure to do this will prevent Ansible from SSH'ing into the instance.
 
 To install RabbitMQ all you have to do is issue `./playbook.yml` from the command line.  Ansible will ask you for the password 
-of the SSH account being used as well as the password to use for `sudo` (normally, you can just hit `Enter` here). In a few
-seconds your instance should have the most current RabbitMQ installed and running.
+of the SSH account being used as well as the password to use for `sudo` (normally, you can just hit `Enter` here). Ansible 
+will also prompt you for any configuration settings, providing defaults for each.  In a few seconds your instance should have the 
+most current RabbitMQ installed and running.
 
 #Tips and Tricks
 
