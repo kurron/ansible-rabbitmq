@@ -14,9 +14,11 @@
   vars_prompt:
     - name: "vm_memory_high_watermark"
       prompt: "Percentage of memory to allow RabbitMQ to use"
+      private: no
       default: "0.9"
     - name: "ulimit"
       prompt: "The maximum number of file handles. 4096 for development, 65535 for production."
+      private: no
       default: "4096"
   tasks:
     - debug: msg="vm_memory_high_watermark = {{ vm_memory_high_watermark }}"
